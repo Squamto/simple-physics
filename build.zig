@@ -20,7 +20,7 @@ pub fn build(b: *std.Build) void {
     const module = b.addModule("simple-physics", .{
         .root_source_file = b.path("src/root.zig"),
     });
-    _ = module; // autofix
+    module.addImport("math", math_module);
 
     const lib_unit_tests = b.addTest(.{
         .root_source_file = b.path("src/root.zig"),
@@ -34,12 +34,10 @@ pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_lib_unit_tests.step);
 
-    const doc_compile = b.addStaticLibrary(options);
-
     const docs = b.addInstallDirectory(.{
         .install_dir = .prefix,
         .install_subdir = "docs",
-        .source_dir = doc_compile.getEmittedDocs(),
+        .source_dir = lib.getEmittedDocs(),
     });
 
     const doc_step = b.step("doc", "Install documentation");
